@@ -2,27 +2,28 @@ version: "3"
 
 services:
   wikiless:
-    image: wikiless:latest
+    container_name: wikiless
+    build: wiki/
+    image: local/wikiless
     networks:
-      wikiless_net:
-        ipv4_address: 172.30.0.6
+      - wikiless
+      - nginx
     environment:
-      REDIS_HOST: redis://172.30.0.5:6379
-    ports:
-      - "8180:8080"
+      REDIS_HOST: redis://wikiless_redis:6379
+    # ports:
+    #   - "8180:8080"
     depends_on:
-        - wikiless_redis
+      - wikiless_redis
 
   wikiless_redis:
+    container_name: wikiless_redis
     image: "redis:alpine"
     networks:
-      wikiless_net:
-        ipv4_address: 172.30.0.5
+      - wikiless
     ports:
       - "6379"
 
 networks:
-  wikiless_net:
-    ipam:
-      config:
-        - subnet: 172.30.0.0/24
+  nginx:
+    external: true
+  wikiless:
